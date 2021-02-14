@@ -9,15 +9,14 @@ jobs:
     strategy:
       matrix:
         unity-version:
-        - 2019.4.11f1
         - 2018.4.20f1
     
     steps:
-    - uses: pCYSl5EDgo/setup-unity@master
+    - uses: webbertakken/unity-request-manual-activation-file@v1.1
       with:
         unity-version: ${{ matrix.unity-version }}
-    - name: Create Manual Activation File
-      run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -logfile -createManualActivationFile || exit 0
+    # - name: Create Manual Activation File
+    #   run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -logfile -createManualActivationFile || exit 0
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1.0.0
@@ -35,6 +34,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: Unity_v${{ matrix.unity-version }}.alf
-        asset_name: Unity_v${{ matrix.unity-version }}.alf
+        asset_path: ${{ steps.getManualLicenseFile.outputs.filePath }}
+        asset_name: ${{ steps.getManualLicenseFile.outputs.filePath }}
         asset_content_type: application/xml
